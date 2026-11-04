@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memory Haul</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,500&family=Inter:wght@300;400;500&family=Caveat:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#efe6d6;--ink:#161412;--char:#2a2724;--beige:#b9a88e;--wine:#6e1f2e;--gold:#b89a5e;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--hand:'Caveat',cursive}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth;background:var(--ink)}
+body{background:var(--ink);color:var(--ivory);font-family:var(--sans);font-weight:300;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+.fine,.fine *{cursor:none}
+section{position:relative;min-height:100vh;padding:14vh 6vw}
+h1,h2,h3{font-family:var(--serif);font-weight:300;line-height:1}
+.lab{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--beige)}
+.hand{font-family:var(--hand);color:var(--gold);font-size:22px}
+.w{display:inline-block;overflow:hidden;vertical-align:top}.w>i{display:inline-block;font-style:inherit;transform:translateY(110%);transition:transform 1.1s cubic-bezier(.2,.8,.2,1)}
+.in .w>i{transform:none}
+.rv{opacity:0;transform:translateY(30px);transition:opacity 1.2s,transform 1.2s cubic-bezier(.2,.8,.2,1)}.in.rv,.in .rv{opacity:1;transform:none}
+.ph{position:relative;overflow:hidden;background:linear-gradient(135deg,#2d2824,#1c1917);display:block;width:100%;height:100%}
+.ph::after{content:attr(data-n);position:absolute;inset:0;display:grid;place-items:center;font:300 40px var(--serif);color:#ffffff22}
+.ph img,.ph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;transition:transform 1.2s cubic-bezier(.2,.8,.2,1),filter .6s}
+/* grain / vignette / dust */
+#grain{position:fixed;inset:-50%;z-index:90;pointer-events:none;opacity:.09;animation:g 1s steps(6) infinite;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E")}
+@keyframes g{0%{transform:translate(0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}}
+#vig{position:fixed;inset:0;z-index:89;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,#000a 130%)}
+.dust{position:absolute;width:2px;height:2px;border-radius:50%;background:#efe6d655;animation:fl linear infinite;pointer-events:none}
+@keyframes fl{from{transform:translateY(0);opacity:0}20%{opacity:1}to{transform:translateY(-70vh) translateX(30px);opacity:0}}
+#flash{position:fixed;inset:0;background:#fff3df;z-index:150;opacity:0;pointer-events:none;transition:opacity .9s}
+#flash.on{opacity:.85;transition:none}
+/* cursor */
+#cur{position:fixed;z-index:200;left:0;top:0;pointer-events:none;display:none}
+.fine #cur{display:block}
+#cur b{position:absolute;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:var(--ivory);transition:transform .3s,background .3s,width .3s,height .3s}
+#cur span{position:absolute;transform:translate(-50%,-50%) scale(.6);font-size:10px;letter-spacing:.2em;opacity:0;transition:.3s}
+#cur.on b{width:64px;height:64px;margin:-32px;background:#6e1f2ecc}#cur.on span{opacity:1;transform:translate(-50%,-50%)}
+/* intro */
+#intro{position:fixed;inset:0;z-index:300;background:#050404;display:grid;place-items:center;text-align:center;transition:opacity 1.4s,transform 1.6s cubic-bezier(.7,0,.2,1),filter 1.4s}
+#intro.out{opacity:0;transform:scale(1.6);filter:blur(14px);pointer-events:none}
+#intro .t{position:absolute;opacity:0;transition:opacity 1.6s;font:italic 300 clamp(22px,3vw,40px) var(--serif);color:var(--beige)}
+#intro .t.on{opacity:1}
+#ititle{opacity:0;transition:opacity 2s}#ititle.on{opacity:1}
+#ititle h1{font-size:clamp(60px,10vw,150px);letter-spacing:.14em;margin-bottom:22px}
+#ititle p{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--beige)}
+#enter{margin-top:48px;border:1px solid var(--gold);padding:18px 44px;font-size:12px;letter-spacing:.3em;position:relative;transition:box-shadow .5s,transform .3s}
+#enter:hover{box-shadow:0 0 40px #b89a5e44;background:#b89a5e11}
+.rip{position:absolute;border:1px solid var(--gold);border-radius:50%;pointer-events:none;animation:rp 1s forwards}@keyframes rp{from{width:0;height:0;opacity:.8}to{width:300px;height:300px;opacity:0}}
+#skip{position:absolute;right:28px;bottom:24px;font-size:11px;letter-spacing:.2em;color:var(--beige);opacity:.6}
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:80;display:flex;justify-content:space-between;align-items:center;padding:22px 3vw;mix-blend-mode:difference;color:#efe6d6}
+nav b{font:500 14px var(--serif);letter-spacing:.35em}nav div{display:flex;gap:26px}
+nav a{font-size:10px;letter-spacing:.18em;text-decoration:none;color:inherit;opacity:.5;transition:opacity .3s}nav a.act,nav a:hover{opacity:1}
+#prog{position:fixed;left:0;top:0;height:2px;background:var(--wine);z-index:95;width:0}
+#snd{position:fixed;left:3vw;bottom:22px;z-index:80;font-size:10px;letter-spacing:.2em;color:var(--beige)}
+/* hero */
+#s1{display:grid;grid-template-columns:1.5fr 1fr;gap:4vw;align-items:center;overflow:hidden}
+#s1 .big{height:76vh;margin-left:-6vw;clip-path:inset(0 100% 0 0);transition:clip-path 1.8s cubic-bezier(.7,0,.2,1)}
+#s1.in .big{clip-path:inset(0)}
+#s1 h2{font-size:clamp(36px,4.6vw,70px);margin-bottom:24px;line-height:1.1}
+#s1 h2.l2{color:var(--beige);font-style:italic}
+.leak{position:absolute;width:50vw;height:50vw;border-radius:50%;filter:blur(90px);background:radial-gradient(#6e1f2e66,transparent 65%);top:-10vw;right:-12vw;pointer-events:none}
+.meta{position:absolute;right:5vw;bottom:12vh;text-align:right}
+/* gallery */
+.sh{display:flex;justify-content:space-between;align-items:end;margin-bottom:8vh}.sh h2{font-size:clamp(44px,6vw,96px)}
+#grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:7vw;gap:1.6vw;grid-auto-flow:dense}
+.mc{position:relative;transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .7s,filter .7s;transform:rotate(var(--r))}
+.mc .ph{height:100%}.mc.pol{background:var(--ivory);padding:10px 10px 38px;color:var(--ink)}.mc.pol .ph{height:100%}
+.mc.pol .cap{color:var(--ink)}
+.mc .no{position:absolute;top:-8px;left:-6px;z-index:3;font:500 11px var(--serif);letter-spacing:.2em;background:var(--ink);padding:3px 8px;color:var(--gold)}
+.mc .cap{position:absolute;left:12px;bottom:10px;z-index:3;font:italic 15px var(--serif);opacity:.0;transform:translateY(8px);transition:.5s;text-shadow:0 1px 8px #000}
+.mc.pol .cap{opacity:.8;text-shadow:none;transform:none;font-family:var(--hand);font-style:normal;font-size:19px}
+.mc:hover{transform:rotate(0) scale(1.04);z-index:5}.mc:hover .cap{opacity:1;transform:none}.mc:hover img{transform:scale(1.07);filter:brightness(1.1)}
+#grid:hover .mc:not(:hover){opacity:.55;filter:blur(1px)}
+/* film strip */
+#s3{background:#0c0b0a;padding-left:0;padding-right:0}#s3 .sh{padding:0 6vw}
+#strip{display:flex;gap:26px;overflow-x:auto;padding:50px 6vw;scrollbar-width:none;border-top:14px dashed #2a2724;border-bottom:14px dashed #2a2724;user-select:none}
+#strip::-webkit-scrollbar{display:none}
+.vc{flex:0 0 360px;transition:transform .5s}.vc:hover{transform:translateY(-12px) scale(1.03)}
+.vc .fr{height:220px;border:6px solid #1e1b19;outline:1px solid #3a352f;position:relative}
+.vc .pl{position:absolute;z-index:3;inset:0;display:grid;place-items:center;font-size:30px;color:#fff;opacity:.75}
+.vc .fr::before{content:"";position:absolute;inset:0;z-index:2;background:#0003;transition:.5s}.vc:hover .fr::before{background:transparent}
+.vc p{margin-top:12px;font-size:11px;letter-spacing:.2em;color:var(--beige);display:flex;justify-content:space-between}
+/* little things */
+#s4{background:var(--char)}#box{position:relative;height:110vh}
+#box>*{position:absolute;transform:rotate(var(--r));transition:transform .5s}#box>*:hover{transform:rotate(0) scale(1.06);z-index:9}
+.tape{position:absolute;top:-12px;left:50%;width:70px;height:22px;margin-left:-35px;background:#d8c9a566;transform:rotate(-4deg);z-index:4}
+.pap{background:#e6dcc7;color:var(--ink);padding:18px;font:italic 20px/1.3 var(--serif);box-shadow:0 8px 20px #0006}
+.pap.h{font:26px/1.2 var(--hand)}
+.pic{padding:8px;background:var(--ivory)}.pic .ph{height:100%}
+/* archive */
+#s5{background:#0f0d0c}.stat{display:flex;gap:8vw;align-items:end;margin-bottom:8vh}
+#cnt{font:300 clamp(100px,16vw,240px)/.8 var(--serif);color:var(--ivory)}
+.f{display:flex;gap:30px;margin-bottom:4vh}.f button{font-size:12px;letter-spacing:.25em;opacity:.45;padding-bottom:6px;border-bottom:1px solid transparent}.f button.on{opacity:1;border-color:var(--gold)}
+#idx{display:grid;grid-template-columns:repeat(4,1fr);gap:0 3vw}
+.ar{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid #ffffff14;font:400 17px var(--serif);transition:opacity .4s,transform .4s,padding .3s;text-align:left;width:100%}
+.ar:hover{padding-left:12px;color:var(--gold)}.ar span{color:var(--beige);font:11px var(--sans);letter-spacing:.2em;align-self:center}
+.ar.out{opacity:0;transform:scale(.96)}
+/* last */
+#s6{display:grid;place-items:center;text-align:center;background:#050404;overflow:hidden}
+#s6 .bg{position:absolute;inset:0;opacity:.28}#s6 .bg .ph{height:100%}
+#s6 .c{position:relative;z-index:2}
+#s6 h3{font-size:clamp(28px,4vw,56px);margin:26px 0;font-style:italic;opacity:0;transition:opacity 2.4s}
+#s6.in h3{opacity:1}#s6.in h3:nth-of-type(2){transition-delay:3s}#s6.in h3:nth-of-type(3){transition-delay:6s}
+#s6 h1{font-size:clamp(60px,9vw,140px);letter-spacing:.12em;margin-top:40px;opacity:0;transition:opacity 3s 9s}#s6.in h1{opacity:1}
+#rep{margin-top:40px;font-size:11px;letter-spacing:.3em;border-bottom:1px solid var(--gold);padding-bottom:6px;opacity:0;transition:opacity 2s 11s}#s6.in #rep{opacity:1}
+/* overlays */
+.ov{position:fixed;inset:0;z-index:120;background:#080706e8;backdrop-filter:blur(14px);display:none;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .5s}
+.ov.on{display:flex}.ov.show{opacity:1}
+.ov .stage{width:min(82vw,1300px);height:74vh;display:grid;place-items:center}
+.ov .stage img,.ov .stage video{max-width:100%;max-height:100%;box-shadow:0 30px 90px #000;animation:z .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes z{from{transform:scale(.94);opacity:0}}
+.ov .info{margin-top:18px;text-align:center}.ov .info h3{font:italic 26px var(--serif);margin-top:6px}
+.ov .x{position:absolute;top:24px;right:3vw;font-size:12px;letter-spacing:.25em}
+.ov .nv{position:absolute;top:50%;font:300 44px var(--serif);padding:20px;color:var(--beige)}.ov .nv:hover{color:var(--ivory)}
+.ctl{display:flex;gap:18px;align-items:center;width:min(82vw,1300px);margin-top:14px;font-size:11px;letter-spacing:.15em}
+.ctl input[type=range]{accent-color:var(--wine);height:2px}#pg{flex:1}
+#hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:250;font-size:11px;letter-spacing:.2em;color:var(--beige);background:#000b;padding:10px 18px;transition:opacity 1s}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important;animation:none!important}.w>i,.rv{transform:none!important;opacity:1!important}}
+</style></head><body>
+<div id="grain"></div><div id="vig"></div><div id="flash"></div><div id="cur"><b></b><span></span></div><div id="prog"></div>
+
+<div id="intro">
+ <div class="t" id="t1">Before you continue…</div><div class="t" id="t2">Remember.</div>
+ <div id="ititle"><h1>MEMORY HAUL</h1><p>39 photographs · 25 moving memories</p>
+ <p style="margin-top:18px;font:italic 20px var(--serif);text-transform:none;letter-spacing:0">“Some moments deserve more than a gallery.”</p>
+ <button id="enter" data-mag>ENTER THE MEMORIES</button></div>
+ <button id="skip">SKIP INTRO</button>
+</div>
+
+<nav><b>MEMORY HAUL</b><div id="nv"></div></nav>
+<button id="snd">♪ SOUND OFF</button>
+<main>
+<section id="s1" data-t="01 — The Beginning"><div class="leak"></div>
+ <div class="big" data-p=".08"><div class="ph" id="hero" data-n="01"></div></div>
+ <div><p class="lab rv">The beginning</p><br>
+  <h2 class="split">Not every memory announces itself as important.</h2>
+  <h2 class="l2 split">Some simply become important later.</h2>
+  <p class="hand rv" style="margin-top:28px;transform:rotate(-3deg)">I Love Youuu</p></div>
+ <div class="meta rv"><p class="lab" id="hmeta"></p></div></section>
+
+<section id="s2" data-t="02 — Moments"><div class="sh"><h2 class="split">Moments</h2><p class="lab">39 photographs</p></div><div id="grid"></div></section>
+
+<section id="s3" data-t="03 — Moving Memories"><div class="sh"><h2 class="split">Moving Memories</h2><p class="lab">25 films · drag to explore</p></div><div id="strip" data-c="DRAG"></div></section>
+
+<section id="s4" data-t="04 — The Little Things"><div class="sh"><h2 class="split">The Little Things</h2><p class="hand">a memory box</p></div><div id="box"></div></section>
+
+<section id="s5" data-t="05 — The Archive"><div class="stat"><div><div id="cnt">00</div><p class="lab" style="margin-top:14px">Total memories</p></div>
+ <div><p class="lab">39 photographs</p><br><p class="lab">25 videos</p></div></div>
+ <div class="f" id="flt"><button class="on" data-f="all">ALL</button><button data-f="photo">PHOTOS</button><button data-f="video">VIDEOS</button></div><div id="idx"></div></section>
+
+<section id="s6" data-t="06 — Last Frame"><div class="bg"><div class="ph" id="last" data-n="39"></div></div>
+ <div class="c"><h3>Some moments end.</h3><h3>They just don't stop existing.</h3><h3>Thanks for remembering.</h3><h1>UNTIL NEXT TIME.</h1><button id="rep">REPLAY MEMORY HAUL</button></div></section>
+</main>
+
+<div class="ov" id="lb"><button class="x" data-x>CLOSE ✕</button><button class="nv" style="left:2vw" data-d="-1" aria-label="Previous">‹</button><button class="nv" style="right:2vw" data-d="1" aria-label="Next">›</button>
+ <div class="stage" id="lbs"></div><div class="info"><p class="lab" id="lbm"></p><h3 id="lbc"></h3></div></div>
+<div class="ov" id="vp"><button class="x" data-x>CLOSE ✕</button><button class="nv" style="left:2vw" data-d="-1" aria-label="Previous">‹</button><button class="nv" style="right:2vw" data-d="1" aria-label="Next">›</button>
+ <div class="stage" id="vps"></div>
+ <div class="ctl"><button id="pp">PLAY</button><span id="tm">00:00</span><input type="range" id="pg" min="0" max="1000" value="0" aria-label="Progress"><button id="vm">VOL</button><input type="range" id="vl" min="0" max="1" step=".05" value="1" style="width:80px" aria-label="Volume"><button id="fs">FULLSCREEN</button></div>
+ <div class="info"><p class="lab" id="vpm"></p><h3 id="vpc"></h3></div></div>
+
+<script>
+/* ================= EDIT YOUR MEMORIES HERE =================
+   Media lives in /memories/images/01.jpg…39.jpg, /memories/videos/01.mp4…25.mp4, /memories/thumbnails/01.jpg…25.jpg
+   Replace any caption/date/location below; leave "" to hide. */
+const BASE="memories/";                       // change to "/memories/" if served from a site root
+const AUDIO_SRC="";                           // optional ambient track, e.g. "memories/ambient.mp3"
+const P=n=>String(n).padStart(2,"0");
+const imageFileName=id=>{const map={6:"6.jpg",28:"28.png",29:"29.png",36:"36.png"};return map[id]||`${P(id)}.jpg`};
+const customCaps={
+  1:"the beginning",2:"that afternoon",3:"we didn't know we'd remember this",
+  4:"Candid in boudha",6:"Planning boudh",9:"Hehehe",12:"Core Memory",
+  14:"Cutiess",16:"Pic before Biryanii",18:"Remember?",20:"IOE",
+  22:"Biratnagar for you",25:"Boyfriends day?",28:"Hehehe",
+  30:"Grilfriends day?",32:"Bunny?",34:"Sweetie",
+  36:"Random Video call",38:"Going shillong?"
+};
+const images=Array.from({length:39},(_,i)=>({id:i+1,src:`${BASE}images/${imageFileName(i+1)}`,
+  caption:customCaps[i+1]||"caption "+P(i+1),date:"date",location:"location"}));
+const videos=Array.from({length:25},(_,i)=>({id:i+1,src:`${BASE}videos/${P(i+1)}.mp4`,thumbnail:`${BASE}thumbnails/${P(i+1)}.jpg`,
+  caption:"moving memory "+P(i+1),date:"date",duration:"00:00"}));
+/* The Little Things: type = img | vid | note | hand ; ref = media id ; pos = [left%, top%, width px, rotation deg] */
+const little=[
+ {t:"img",ref:7,p:[3,4,230,-4]},{t:"note",x:"“we didn't know we'd remember this”",p:[24,2,260,3]},{t:"vid",ref:3,p:[44,6,300,2]},
+ {t:"hand",x:"keep this one",p:[72,3,200,-6]},{t:"img",ref:14,p:[78,20,220,5]},{t:"img",ref:21,p:[10,32,200,3]},
+ {t:"note",x:"date · place · a few words",p:[30,36,240,-3]},{t:"vid",ref:11,p:[52,40,290,-2]},{t:"hand",x:"nothing special. everything.",p:[8,64,260,4]},
+ {t:"img",ref:30,p:[34,62,250,-3]},{t:"img",ref:5,p:[62,66,200,6]},{t:"note",x:"some things stay quiet",p:[80,58,230,-4]}];
+
+/* ================= helpers ================= */
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RM=matchMedia("(prefers-reduced-motion:reduce)").matches,FINE=matchMedia("(hover:hover) and (pointer:fine)").matches;
+const media=(src,n,alt)=>`<span class="ph" data-n="${P(n)}"><img loading="lazy" decoding="async" src="${src}" alt="${alt}" onerror="this.remove()"></span>`;
+const vidEl=v=>`<span class="ph" data-n="${P(v.id)}"><video muted loop playsinline preload="none" data-src="${v.src}" aria-label="Moving memory ${P(v.id)}"></video></span>`;
+const meta=o=>[o.date,o.location||o.duration].filter(x=>x&&x!=="date"&&x!=="location"&&x!=="00:00").join(" · ");
+// desktop view on phones
+if(screen.width<768){$("meta[name=viewport]").content="width=1280";}
+if(FINE)document.body.classList.add("fine");
+
+/* ================= build ================= */
+$("#hero").innerHTML=`<img src="${images[0].src}" alt="${images[0].caption}" onerror="this.remove()">`;
+$("#last").innerHTML=`<img src="${images[38].src}" alt="" onerror="this.remove()">`;
+$("#hmeta").innerHTML=`01 — ${images[0].caption}<br>${meta(images[0])}`;
+// gallery layout: [colspan,rowspan,polaroid]
+const L=[[5,5,0],[3,4,1],[4,3,0],[3,3,1],[4,5,0],[4,4,1],[3,3,0],[5,4,0],[3,4,1],[4,3,0],[4,4,0],[3,3,1],[6,5,0],[3,4,1],[3,3,0],[4,4,1]];
+$("#grid").innerHTML=images.map((m,i)=>{const[c,r,p]=L[i%L.length];
+ return `<figure class="mc ${p?"pol":""} rv" data-c="VIEW" data-i="${i}" tabindex="0" role="button" aria-label="Open photo ${P(m.id)}" style="grid-column:span ${c};grid-row:span ${r};--r:${((i*37)%9-4)*.6}deg;margin-top:${(i%3)*10}px">
+ <span class="no">${P(m.id)}</span>${media(m.src,m.id,m.caption)}<figcaption class="cap">${m.caption}</figcaption></figure>`}).join("");
+$("#strip").innerHTML=videos.map((v,i)=>`<div class="vc" data-c="PLAY" data-v="${i}" tabindex="0" role="button" aria-label="Play moving memory ${P(v.id)}">
+ <div class="fr">${vidEl(v)}</div>
+ <p><span>MOVING MEMORY ${P(v.id)}</span><span class="dur">${v.duration}</span></p></div>`).join("");
+$("#box").innerHTML=little.map(o=>{const[l,t,w,r]=o.p;let h="";const st=`left:${l}%;top:${t}%;width:${w}px;--r:${r}deg`;
+ if(o.t==="img"){const m=images[o.ref-1];return `<div class="pic" data-c="VIEW" data-i="${o.ref-1}" style="${st};height:${w*1.1}px"><i class="tape"></i>${media(m.src,m.id,m.caption)}</div>`}
+ if(o.t==="vid"){const v=videos[o.ref-1];return `<div class="pic" data-c="PLAY" data-v="${o.ref-1}" style="${st};height:${w*.7}px"><i class="tape"></i>${vidEl(v)}</div>`}
+ return `<div class="pap ${o.t==="hand"?"h":""}" style="${st}">${o.x}</div>`}).join("");
+// archive: interleave photos/videos
+const all=[];{let pi=0,vi=0;for(let i=0;i<64;i++){const isV=Math.floor((i+1)*25/64)>Math.floor(i*25/64)&&vi<25;all.push(isV?{k:"video",n:vi++}:{k:"photo",n:pi++})}}
+$("#idx").innerHTML=all.map((a,i)=>`<button class="ar" data-k="${a.k}" data-a="${a.k==="video"?"v":"i"}${a.n}">${P(i+1)} — ${a.k==="video"?"Video":"Photo"}<span>${P(a.n+1)}</span></button>`).join("");
+$("#nv").innerHTML=$$("main section").map((s,i)=>`<a href="#${s.id}">${P(i+1)}</a>`).join("");
+$$("main section").forEach(s=>{});
+// split text
+$$(".split").forEach(el=>{let d=0;el.innerHTML=el.textContent.split(" ").map(w=>`<span class="w"><i style="transition-delay:${(d++)*70}ms">${w}</i></span>`).join(" ")});
+// dust
+for(let i=0;i<22;i++){const d=document.createElement("i");d.className="dust";d.style.cssText=`left:${Math.random()*100}%;top:${50+Math.random()*50}%;animation-duration:${10+Math.random()*14}s;animation-delay:-${Math.random()*20}s`;$("#s1").appendChild(d)}
+
+/* ================= reveal, nav, parallax, progress ================= */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");if(e.target.id==="s5")count();}}),{threshold:.15});
+$$("section,.rv").forEach(e=>io.observe(e));
+const nio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=$$("main section").indexOf(e.target);$$("#nv a").forEach((a,j)=>{a.classList.toggle("act",i===j);a.textContent=i===j?e.target.dataset.t:P(j+1)})}}),{threshold:.5});
+$$("main section").forEach(s=>nio.observe(s));
+let counted=0;function count(){if(counted)return;counted=1;const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/(RM?1:1800));$("#cnt").textContent=P(Math.round(64*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(f)})(t0)}
+let tick=0;addEventListener("scroll",()=>{if(tick)return;tick=1;requestAnimationFrame(()=>{tick=0;
+ $("#prog").style.width=scrollY/(document.documentElement.scrollHeight-innerHeight)*100+"%";
+ if(!RM)$$("[data-p]").forEach(e=>{const r=e.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)e.style.transform=`translateY(${(r.top+r.height/2-innerHeight/2)*-parseFloat(e.dataset.p)}px)`})})},{passive:true});
+
+/* ================= cursor + magnetic ================= */
+if(FINE){const c=$("#cur");let x=0,y=0,cx=0,cy=0;addEventListener("mousemove",e=>{x=e.clientX;y=e.clientY;const t=e.target.closest("[data-c]");c.classList.toggle("on",!!t);$("span",c).textContent=t?t.dataset.c:""});
+ (function f(){cx+=(x-cx)*.2;cy+=(y-cy)*.2;c.style.transform=`translate(${cx}px,${cy}px)`;requestAnimationFrame(f)})();
+ $$("[data-mag]").forEach(b=>{b.addEventListener("mousemove",e=>{const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.25}px,${(e.clientY-r.top-r.height/2)*.35}px) scale(1.05)`});b.addEventListener("mouseleave",()=>b.style.transform="")})}
+// strip drag
+{const s=$("#strip");let d=0,sx=0,sl=0,moved=0;s.addEventListener("mousedown",e=>{d=1;moved=0;sx=e.pageX;sl=s.scrollLeft});addEventListener("mouseup",()=>d=0);
+ s.addEventListener("mousemove",e=>{if(d){const dx=e.pageX-sx;if(Math.abs(dx)>4)moved=1;s.scrollLeft=sl-dx}});s.addEventListener("click",e=>{if(moved){e.stopPropagation();moved=0}},true)}
+// videos autoplay (muted) when they scroll into view; load lazily, pause when out of view
+const vio=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;
+ if(e.isIntersecting){if(!v.src){v.src=v.dataset.src;v.onerror=()=>v.remove();v.onloadedmetadata=()=>{const d=Math.round(v.duration),c=v.closest("[data-v]");if(d&&c){const el=$(".dur",c);if(el)el.textContent=P(Math.floor(d/60))+":"+P(d%60)}}}
+  v.play().catch(()=>{})}else v.pause()}),{threshold:.5});
+$$("video[data-src]").forEach(v=>vio.observe(v));
+
+/* ================= lightbox + player ================= */
+let li=0,vi=0,open=null;const show=(o)=>{o.classList.add("on");requestAnimationFrame(()=>o.classList.add("show"));open=o};
+function openImg(i){li=(i+39)%39;const m=images[li];$("#lbs").innerHTML=`<img src="${m.src}" alt="${m.caption}" onerror="this.outerHTML='<p class=hand>${P(m.id)} — add 01.jpg to /memories/images</p>'">`;
+ $("#lbm").textContent=P(m.id)+" / 39  "+meta(m);$("#lbc").textContent=m.caption;if(open!==$("#lb"))show($("#lb"))}
+const vid=()=>$("#vps video");
+function openVid(i){vi=(i+25)%25;const m=videos[vi];$("#vps").innerHTML=`<video src="${m.src}" playsinline preload="metadata"></video>`;
+ const v=vid();$("#vpm").textContent="MOVING MEMORY "+P(m.id)+" / 25  "+meta(m);$("#vpc").textContent=m.caption;
+ v.ontimeupdate=()=>{$("#pg").value=v.currentTime/(v.duration||1)*1000;const t=Math.floor(v.currentTime);$("#tm").textContent=P(Math.floor(t/60))+":"+P(t%60)};
+ v.onplay=v.onpause=()=>$("#pp").textContent=v.paused?"PLAY":"PAUSE";$("#pp").textContent="PLAY";if(open!==$("#vp"))show($("#vp"))}
+function close(){if(!open)return;const v=vid();if(v)v.pause();const o=open;o.classList.remove("show");open=null;setTimeout(()=>{o.classList.remove("on");$("#vps").innerHTML=""},500)}
+$("#pp").onclick=()=>{const v=vid();v.paused?v.play():v.pause()};
+$("#pg").oninput=e=>{const v=vid();v.currentTime=e.target.value/1000*(v.duration||0)};
+$("#vl").oninput=e=>vid().volume=e.target.value;$("#vm").onclick=()=>{const v=vid();v.muted=!v.muted};
+$("#fs").onclick=()=>{const v=vid();(v.requestFullscreen||v.webkitEnterFullscreen).call(v)};
+$$(".ov").forEach(o=>{o.addEventListener("click",e=>{if(e.target.closest("[data-x]")||e.target===o||e.target.classList.contains("stage"))close();const n=e.target.closest("[data-d]");if(n){const d=+n.dataset.d;o.id==="lb"?openImg(li+d):openVid(vi+d)}})});
+document.addEventListener("click",e=>{const a=e.target.closest("[data-i]"),b=e.target.closest("[data-v]");if(a)openImg(+a.dataset.i);else if(b)openVid(+b.dataset.v);const r=e.target.closest("[data-a]");if(r){const k=r.dataset.a;k[0]==="i"?openImg(+k.slice(1)):openVid(+k.slice(1))}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")close();if(open){const d=e.key==="ArrowRight"?1:e.key==="ArrowLeft"?-1:0;if(d)open.id==="lb"?openImg(li+d):openVid(vi+d);if(e.key===" "&&open.id==="vp"){e.preventDefault();$("#pp").click()}}
+ if(e.key==="Enter"&&e.target.matches("[data-i],[data-v]"))e.target.click()});
+
+/* ================= archive filter ================= */
+$("#flt").onclick=e=>{const f=e.target.dataset.f;if(!f)return;$$("#flt button").forEach(b=>b.classList.toggle("on",b===e.target));
+ $$(".ar").forEach(r=>{const hide=f!=="all"&&r.dataset.k!==f;if(hide){r.classList.add("out");setTimeout(()=>{if(r.classList.contains("out"))r.style.display="none"},400)}else{r.style.display="";requestAnimationFrame(()=>requestAnimationFrame(()=>r.classList.remove("out")))}})};
+
+/* ================= sound ================= */
+{const b=$("#snd");let a=null,on=localStorage.getItem("mh-snd")==="1"&&false;
+ b.onclick=()=>{if(!AUDIO_SRC){b.textContent="♪ ADD AUDIO_SRC";return}if(!a){a=new Audio(AUDIO_SRC);a.loop=true;a.volume=.4}on=!on;on?a.play():a.pause();b.textContent=on?"♪ SOUND ON":"♪ SOUND OFF";localStorage.setItem("mh-snd",on?"1":"0")};
+ b.addEventListener("wheel",e=>{if(a)a.volume=Math.max(0,Math.min(1,a.volume-e.deltaY/2000))})}
+
+/* ================= intro ================= */
+const intro=$("#intro"),wait=ms=>new Promise(r=>setTimeout(r,RM?0:ms));let skipped=false;
+function enter(){if(skipped)return;skipped=true;sessionStorage.setItem("mh-intro","1");const f=$("#flash");f.classList.add("on");setTimeout(()=>f.classList.remove("on"),60);intro.classList.add("out");scrollTo(0,0);setTimeout(()=>{intro.style.display="none";$("#s1").classList.add("in")},RM?0:900)}
+async function play(){skipped=false;intro.style.display="";intro.classList.remove("out");$$("#intro .t,#ititle").forEach(e=>e.classList.remove("on"));
+ await wait(900);if(skipped)return;$("#t1").classList.add("on");await wait(2600);$("#t1").classList.remove("on");await wait(1200);if(skipped)return;
+ $("#t2").classList.add("on");await wait(2600);$("#t2").classList.remove("on");await wait(1800);if(skipped)return;$("#ititle").classList.add("on")}
+$("#enter").onclick=e=>{const r=document.createElement("i");r.className="rip";r.style.left=e.offsetX-150+"px";r.style.top=e.offsetY-150+"px";e.currentTarget.appendChild(r);setTimeout(enter,350)};
+$("#skip").onclick=()=>{$("#ititle").classList.add("on");enter()};
+$("#rep").onclick=()=>{sessionStorage.removeItem("mh-intro");$$(".in").forEach(e=>e.classList.remove("in"));counted=0;$("#cnt").textContent="00";scrollTo({top:0,behavior:"instant"});play()};
+if(sessionStorage.getItem("mh-intro")){intro.style.display="none";$("#s1").classList.add("in")}else play();
+// landscape hint (first visit, small screens)
+if(screen.width<768&&!localStorage.getItem("mh-hint")){const h=document.createElement("div");h.id="hint";h.textContent="Best experienced in landscape.";document.body.appendChild(h);localStorage.setItem("mh-hint","1");setTimeout(()=>{h.style.opacity=0},4500);setTimeout(()=>h.remove(),5600)}
+</script></body></html>
